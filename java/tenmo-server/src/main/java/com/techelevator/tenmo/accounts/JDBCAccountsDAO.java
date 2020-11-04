@@ -1,5 +1,8 @@
 package com.techelevator.tenmo.accounts;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -27,21 +30,27 @@ public class JDBCAccountsDAO implements AccountsDAO {
 	}
 
 	@Override
-	public void withdraw(int id) {
-		
-		
+	public void withdraw(int id, double amountToWithdraw) {
+		Accounts account = searchAccountsById(id);
+		double currentBalance = account.getBalance();
+		currentBalance -= amountToWithdraw;
+		String query = "UPDATE accounts SET balance = ? WHERE account_id = ?";
+		jdbcTemplate.update(query, currentBalance, id);
 	}
 
 
 	@Override
-	public void deposit(int id) {
-		// TODO Auto-generated method stub
-		
+	public void deposit(int id, double amountToDeposit) {
+		Accounts account = searchAccountsById(id);
+		double currentBalance = account.getBalance();
+		currentBalance += amountToDeposit;
+		String query = "UPDATE accounts (balance) VALUES (?) WHERE account_id = ?";
+		jdbcTemplate.update(query, currentBalance, id);
 	}
 	@Override
     public Accounts searchAccountsById(int id) {
     	String query = "SELECT * FROM accounts WHERE account_id = ?";
-    	SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query);
+    	SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query, id);
     	if (rowSet.next()) {
     		Accounts account = new Accounts();
     		account = mapRowToAccounts(rowSet);
@@ -50,9 +59,11 @@ public class JDBCAccountsDAO implements AccountsDAO {
     	}
     	return null;
     }
+	
+	@Override
 	public Accounts searchAccountsByUserId(int id) {
-		String query = "Select * FROM accounts WHERE user_id = ?";
-		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query);
+		String query = "SELECT * FROM accounts WHERE user_id = ?";
+		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query, id);
 		if (rowSet.next()) {
 			Accounts account = new Accounts();
 			account = mapRowToAccounts(rowSet);
@@ -61,6 +72,20 @@ public class JDBCAccountsDAO implements AccountsDAO {
 		}
 		return null;
 	}
+	
+	@Override
+	public List<Accounts> getAllAccounts() {
+		List<Accounts> accountList = new ArrayList<>();
+		String query = "SELECT * FROM accounts";
+		SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query);
+		
+		while (rowSet.next()) {
+			Accounts account = mapRowToAccounts(rowSet);
+			accountList.add(account);
+		}
+		return accountList;
+	}
+	
     private Accounts mapRowToAccounts(SqlRowSet rowSet) {
     	Accounts account = new Accounts();
     	account.setAccountId(rowSet.getInt("account_id"));

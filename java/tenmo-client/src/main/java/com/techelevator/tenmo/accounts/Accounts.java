@@ -5,6 +5,7 @@ public class Accounts {
 	private int accountId;
 	private int userId;
 	private double balance;
+	
 
 	public Accounts() {
 		// TODO Auto-generated constructor stub
