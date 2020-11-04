@@ -12,6 +12,10 @@ public class Accounts {
 		this.balance = balance;
 	}
 
+	public Accounts() {
+		// TODO Auto-generated constructor stub
+	}
+
 	public int getAccountId() {
 		return accountId;
 	}
@@ -30,6 +34,10 @@ public class Accounts {
 
 	public double getBalance() {
 		return balance;
+	}
+
+	public void setBalance(double balance) {
+		this.balance = balance;
 	}
 
 }

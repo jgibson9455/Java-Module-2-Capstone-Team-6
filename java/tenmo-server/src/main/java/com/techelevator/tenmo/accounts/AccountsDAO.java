@@ -9,5 +9,6 @@ public interface AccountsDAO {
 
 	public void deposit(int id);
 	
+	public Accounts searchAccountsById(int id);
 
 }
