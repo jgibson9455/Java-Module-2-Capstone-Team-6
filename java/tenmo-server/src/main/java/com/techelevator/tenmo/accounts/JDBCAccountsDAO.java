@@ -34,7 +34,7 @@ public class JDBCAccountsDAO implements AccountsDAO {
 		Accounts account = searchAccountsById(id);
 		double currentBalance = account.getBalance();
 		currentBalance -= amountToWithdraw;
-		String query = "UPDATE accounts SET balance = ? WHERE account_id = ?";
+		String query = "UPDATE accounts SET balance = ? WHERE user_id = ?";
 		jdbcTemplate.update(query, currentBalance, id);
 	}
 
@@ -44,7 +44,7 @@ public class JDBCAccountsDAO implements AccountsDAO {
 		Accounts account = searchAccountsById(id);
 		double currentBalance = account.getBalance();
 		currentBalance += amountToDeposit;
-		String query = "UPDATE accounts (balance) VALUES (?) WHERE account_id = ?";
+		String query = "UPDATE accounts SET balance = ? WHERE user_id = ?";
 		jdbcTemplate.update(query, currentBalance, id);
 	}
 	@Override

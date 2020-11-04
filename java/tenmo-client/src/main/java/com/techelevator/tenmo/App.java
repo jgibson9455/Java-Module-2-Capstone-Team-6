@@ -1,5 +1,7 @@
 package com.techelevator.tenmo;
 
+import java.util.Scanner;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,7 +32,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private ConsoleService console;
     private AuthenticationService authenticationService;
   //  private JDBCAccountsDAO jdbcAccountsDao;
-
+    private Scanner input;
     public static void main(String[] args) {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
     	app.run();
@@ -60,7 +62,13 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			} else if(MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS.equals(choice)) {
 				viewPendingRequests();
 			} else if(MAIN_MENU_OPTION_SEND_BUCKS.equals(choice)) {
-				sendBucks();
+				input = new Scanner(System.in);
+				System.out.print("Please enter the user ID you would like to send bucks to: ");
+				int aNumber = Integer.valueOf(input.nextLine());
+				System.out.print("Please enter the amount you would like to send: ");
+				double amountToSend = Double.parseDouble(input.nextLine());
+				
+				sendBucks(currentUser, aNumber, amountToSend);
 			} else if(MAIN_MENU_OPTION_REQUEST_BUCKS.equals(choice)) {
 				requestBucks();
 			} else if(MAIN_MENU_OPTION_LOGIN.equals(choice)) {
@@ -92,8 +100,11 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		
 	}
 
-	private void sendBucks() {
-		// TODO Auto-generated method stub
+	private void sendBucks(AuthenticatedUser currentUser, int toId, double amountToSend) {
+		RestTemplate restTemplate = new RestTemplate();
+		int id = currentUser.getUser().getId();
+		restTemplate.put(API_BASE_URL + "withdraw/" + id, amountToSend);
+	    restTemplate.put(API_BASE_URL + "deposit/"+ toId, amountToSend);
 		
 	}
 
