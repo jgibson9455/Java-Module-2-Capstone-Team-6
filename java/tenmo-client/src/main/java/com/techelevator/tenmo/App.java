@@ -1,5 +1,7 @@
 package com.techelevator.tenmo;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import org.springframework.http.ResponseEntity;
@@ -10,6 +12,7 @@ import com.techelevator.tenmo.models.AuthenticatedUser;
 import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.users.Users;
 import com.techelevator.view.ConsoleService;
 
 public class App {
@@ -31,7 +34,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
-  //  private JDBCAccountsDAO jdbcAccountsDao;
+    private List<Users> userList;
     private Scanner input;
     public static void main(String[] args) {
     	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
@@ -63,6 +66,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				viewPendingRequests();
 			} else if(MAIN_MENU_OPTION_SEND_BUCKS.equals(choice)) {
 				input = new Scanner(System.in);
+				listAllUsers();
 				System.out.print("Please enter the user ID you would like to send bucks to: ");
 				int aNumber = Integer.valueOf(input.nextLine());
 				System.out.print("Please enter the amount you would like to send: ");
@@ -105,12 +109,21 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		int id = currentUser.getUser().getId();
 		restTemplate.put(API_BASE_URL + "withdraw/" + id, amountToSend);
 	    restTemplate.put(API_BASE_URL + "deposit/"+ toId, amountToSend);
-		
+		viewCurrentBalance(currentUser);
 	}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
 		
+	}
+	private void listAllUsers() {
+		RestTemplate apiCall = new RestTemplate();
+		ResponseEntity<Users[]> entity = apiCall.getForEntity(API_BASE_URL + "users/", Users[].class);
+	    userList = Arrays.asList(entity.getBody());
+		System.out.println("*********************Current Users**************************");
+		for (Users u : userList) {
+			System.out.println(u.getUserId() + ") " + u.getUsername());
+		}
 	}
 	
 	private void exitProgram() {

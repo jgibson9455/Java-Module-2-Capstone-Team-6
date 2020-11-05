@@ -6,10 +6,8 @@ public class Users {
 	private String username;
 	private String passwordHash;
 	
-	public Users(int userId, String username, String passwordHash) {
-		this.userId = userId;
-		this.username = username;
-		this.passwordHash = passwordHash;
+	public Users() {
+		
 	}
 
 	public int getUserId() {
@@ -30,6 +28,10 @@ public class Users {
 
 	public String getPasswordHash() {
 		return passwordHash;
+	}
+
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
 	}
 
 	
