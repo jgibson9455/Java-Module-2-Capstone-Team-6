@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@PreAuthorize("isAuthenticated()")
 public class AccountsController {
 private JDBCAccountsDAO accountsDao;
 private final String BASE_URL = "http://localhost:8080";

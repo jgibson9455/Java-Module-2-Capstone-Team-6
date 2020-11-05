@@ -13,7 +13,6 @@ import com.techelevator.tenmo.accounts.Accounts;
 import com.techelevator.tenmo.accounts.JDBCAccountsDAO;
 
 @RestController
-@PreAuthorize("isAuthenticated()")
 public class UsersController {
 	
      private JDBCUsersDAO jdbcUsersDao;

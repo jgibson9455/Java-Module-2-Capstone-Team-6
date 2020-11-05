@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.techelevator.tenmo.accounts.JDBCAccountsDAO;
 
 @RestController
-@PreAuthorize("isAuthenticated()")
 public class TransfersController {
 
 	private JDBCAccountsDAO jdbcAccountsDao;
