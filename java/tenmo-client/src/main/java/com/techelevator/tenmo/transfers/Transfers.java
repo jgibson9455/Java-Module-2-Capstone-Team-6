@@ -4,6 +4,13 @@ public class Transfers {
 	
 	private int id;
 	private int typeId;
+	private int statusId;
+	private int accountFrom;
+	private int accountTo;
+	private double amount;
+	
+	public Transfers(){}
+	
 	public int getId() {
 		return id;
 	}
@@ -52,18 +59,6 @@ public class Transfers {
 		this.amount = amount;
 	}
 
-	private int statusId;
-	private int accountFrom;
-	private int accountTo;
-	private double amount;
-	
-	public Transfers(int id, int typeId, int statusId, int accountFrom, int accountTo, double amount) {
-		this.id = id;
-		this.typeId = typeId;
-		this.statusId = statusId;
-		this.accountFrom = accountFrom;
-		this.accountTo = accountTo;
-		this.amount = amount;
-	}
+
 
 }

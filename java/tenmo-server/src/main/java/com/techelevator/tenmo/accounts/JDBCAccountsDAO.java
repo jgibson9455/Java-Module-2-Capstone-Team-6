@@ -47,6 +47,12 @@ public class JDBCAccountsDAO implements AccountsDAO {
 		String query = "UPDATE accounts SET balance = ? WHERE user_id = ?";
 		jdbcTemplate.update(query, currentBalance, id);
 	}
+	
+	public void update(int id, double balance) {
+		String query = "UPDATE accounts SET balance = ? WHERE user_id = ?";
+		jdbcTemplate.update(query, balance, id);
+	}
+	
 	@Override
     public Accounts searchAccountsById(int id) {
     	String query = "SELECT * FROM accounts WHERE account_id = ?";

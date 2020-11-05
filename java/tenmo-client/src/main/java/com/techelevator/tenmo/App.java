@@ -12,6 +12,8 @@ import com.techelevator.tenmo.models.AuthenticatedUser;
 import com.techelevator.tenmo.models.UserCredentials;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.transfers.Transfers;
+import com.techelevator.tenmo.transfers.TransfersDTO;
 import com.techelevator.tenmo.users.Users;
 import com.techelevator.view.ConsoleService;
 
@@ -56,23 +58,30 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void mainMenu() {
+		populateUserList();
 		while(true) {
 			String choice = (String)console.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 			if(MAIN_MENU_OPTION_VIEW_BALANCE.equals(choice)) {
 				viewCurrentBalance(currentUser);
 			} else if(MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS.equals(choice)) {
-				viewTransferHistory();
+				viewTransferHistory(currentUser);
 			} else if(MAIN_MENU_OPTION_VIEW_PENDING_REQUESTS.equals(choice)) {
 				viewPendingRequests();
 			} else if(MAIN_MENU_OPTION_SEND_BUCKS.equals(choice)) {
 				input = new Scanner(System.in);
-				listAllUsers();
-				System.out.print("Please enter the user ID you would like to send bucks to: ");
+				System.out.println("*********************Current Users**************************");
+				for (Users u : userList) {
+					System.out.println(u.getUserId() + ") " + u.getUsername());
+				}
+				try {
+				System.out.print("\nPlease enter the user ID you would like to send bucks to: ");
 				int aNumber = Integer.valueOf(input.nextLine());
-				System.out.print("Please enter the amount you would like to send: ");
+				System.out.print("\nPlease enter the amount you would like to send: ");
 				double amountToSend = Double.parseDouble(input.nextLine());
-				
 				sendBucks(currentUser, aNumber, amountToSend);
+				}catch(NumberFormatException ex) {
+					System.out.println("\nSorry, something went wrong! Try again!");
+				}
 			} else if(MAIN_MENU_OPTION_REQUEST_BUCKS.equals(choice)) {
 				requestBucks();
 			} else if(MAIN_MENU_OPTION_LOGIN.equals(choice)) {
@@ -92,11 +101,22 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				(API_BASE_URL + "accounts/" + id, Accounts.class);
 		account = responseEntity.getBody();
 		System.out.println("Your current account balance is: $" + account.getBalance());
+		
+		
+		
+		
 	}
 
-	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+	private void viewTransferHistory(AuthenticatedUser currentUser) {
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<Transfers[]> entity = restTemplate.getForEntity
+				(API_BASE_URL + "transfers/" + currentUser.getUser().getId(), Transfers[].class);
+		List<Transfers> transferList = Arrays.asList(entity.getBody());
 		
+		System.out.println("*********************Transaction History**************************");
+		for (Transfers t : transferList) {
+			System.out.println("Bucks Sent: " + t.getAmount() + "   |  To User: " + getNameFromUserList(t.getAccountTo()));
+		}
 	}
 
 	private void viewPendingRequests() {
@@ -107,23 +127,56 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void sendBucks(AuthenticatedUser currentUser, int toId, double amountToSend) {
 		RestTemplate restTemplate = new RestTemplate();
 		int id = currentUser.getUser().getId();
+		ResponseEntity<Accounts> entity = restTemplate.getForEntity
+				(API_BASE_URL + "users/accounts/searchUserId?userId=" + id, Accounts.class);
+		Accounts fromAccount = entity.getBody();
+		double currentUserBalance = fromAccount.getBalance();
+		if (amountToSend > currentUserBalance) {
+			System.out.println("Sorry, but you can't send more money than you have!");
+			viewCurrentBalance(currentUser);
+			return;
+		}else {
 		restTemplate.put(API_BASE_URL + "withdraw/" + id, amountToSend);
 	    restTemplate.put(API_BASE_URL + "deposit/"+ toId, amountToSend);
 		viewCurrentBalance(currentUser);
+		}
+		
+		Transfers transfer = new Transfers();
+		transfer.setAccountTo(toId);
+		transfer.setAccountFrom(id);
+		transfer.setAmount(amountToSend);
+		transfer.setStatusId(2);
+		transfer.setTypeId(2);
+		
+		ResponseEntity<Accounts> toEntity = restTemplate.getForEntity
+				(API_BASE_URL + "users/accounts/searchUserId?userId=" + toId, Accounts.class);
+		Accounts toAccount = entity.getBody();
+		
+		restTemplate.put(API_BASE_URL + "transfer", transfer);
+		
+		//transfer controller to send this DTO to API
+		
 	}
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
 		
 	}
-	private void listAllUsers() {
+	
+	private String getNameFromUserList(int id) {
+		for (Users u : userList) {
+			if(u.getUserId() == id) {
+				return u.getUsername();
+			}
+		}
+		return "ID not found";
+		
+	}
+	
+	private void populateUserList() {
 		RestTemplate apiCall = new RestTemplate();
 		ResponseEntity<Users[]> entity = apiCall.getForEntity(API_BASE_URL + "users/", Users[].class);
 	    userList = Arrays.asList(entity.getBody());
-		System.out.println("*********************Current Users**************************");
-		for (Users u : userList) {
-			System.out.println(u.getUserId() + ") " + u.getUsername());
-		}
 	}
 	
 	private void exitProgram() {
