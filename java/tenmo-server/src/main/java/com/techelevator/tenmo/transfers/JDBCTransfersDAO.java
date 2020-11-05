@@ -51,6 +51,22 @@ public class JDBCTransfersDAO {
     	return transferList;
     	
     }
+    public Transfer listTransfersByTransferId(int id){
+    	Transfers transfer = new Transfers();
+    	try {
+    	String query = "SELECT * FROM transfers WHERE transfer_id = ?";
+    	SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query, id);
+    	if (rowSet.next()) {
+    		 transfer = mapRowToTransfer(rowSet);
+    		
+    	}
+    	}catch (NullPointerException ex) {
+    		System.out.println("No transfers found!");
+    		return null;
+    	}
+    	return transfer;
+    	
+    }
     
     
     public Transfers mapRowToTransfer(SqlRowSet rowSet) {

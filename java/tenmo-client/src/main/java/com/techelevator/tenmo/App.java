@@ -110,7 +110,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	private void viewTransferHistory(AuthenticatedUser currentUser) {
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<Transfers[]> entity = restTemplate.getForEntity
-				(API_BASE_URL + "transfers/" + currentUser.getUser().getId(), Transfers[].class);
+				(API_BASE_URL + "transfers/users/" + currentUser.getUser().getId(), Transfers[].class);
 		List<Transfers> transferList = Arrays.asList(entity.getBody());
 		
 		System.out.println("*********************Transaction History**************************");
