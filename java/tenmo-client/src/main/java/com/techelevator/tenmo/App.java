@@ -91,6 +91,10 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				try {
 				System.out.print("\nPlease enter the user ID you would like to send bucks to: ");
 				int aNumber = Integer.valueOf(input.nextLine());
+				if (aNumber == currentUser.getUser().getId()) {
+					System.out.println("You can't send money to yourself, bud. Come on.");
+					return;
+				}
 				System.out.print("\nPlease enter the amount you would like to send: ");
 				double amountToSend = Double.parseDouble(input.nextLine());
 				if (amountToSend <= 0) {
@@ -108,6 +112,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			} else {
 				// the only other option on the main menu is to exit
 				System.out.println("Thanks for banking with TEnmo! We hope to see you again soon!");
+				System.out.println("\n" + sayGoodbyeStatement());
 				exitProgram();
 			}
 		}
@@ -136,8 +141,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("---------Transaction History---------");
 		System.out.println("---------------Outgoing--------------");
 		
-		for (Transfers t : transferList) {
-			System.out.println("Bucks Sent: " + t.getAmount() + "\nTo User: " + getNameFromUserList(t.getAccountTo()));	
+		for (Transfers t : transferList) { 
+			System.out.println("Transfer ID: " + t.getId() + " Bucks Sent: " + t.getAmount() + "\n               To User: " + getNameFromUserList(t.getAccountTo()));	
 			System.out.println("-------------------------------------");
 		}
 		ResponseEntity<Transfers[]> toEntity = restTemplate.getForEntity
@@ -145,9 +150,39 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		List<Transfers> incomingTransfers = Arrays.asList(toEntity.getBody());
 		System.out.println("---------------Incoming--------------");
 		for (Transfers t : incomingTransfers) {
-			System.out.println("Bucks Received: " + t.getAmount() + "\nFrom User: " + getNameFromUserList(t.getAccountFrom()));	
+			System.out.println("Transfer ID: " + t.getId() + " Bucks Received: " + t.getAmount() + "\n               From User: " + getNameFromUserList(t.getAccountFrom()));	
 			System.out.println("-------------------------------------");
 		}
+		System.out.print("\nWhich transaction would you like to view? (Press 0 to exit) ");
+		input = new Scanner(System.in);
+		int choice = Integer.valueOf(input.nextLine());
+		if (choice == 0) {
+			return;
+		}else {
+			
+			boolean isMatch = false;
+			for (Transfers t : transferList) {
+				if (t.getId() == choice) {
+					isMatch = true;
+					System.out.println("---------Transaction Details---------");
+					System.out.println("Transfer ID: " + t.getId() + "  Transfer Status: APPROVED  Transfer Type: SEND  "
+							+ "\nFrom User: " + getNameFromUserList(t.getAccountFrom()) + "  To User: " + getNameFromUserList(t.getAccountTo()) + "  Amount Transferred: " + t.getAmount());
+					return;
+				}
+			}
+				for (Transfers t : incomingTransfers) {
+					if (t.getId() == choice) {
+						isMatch = true;
+						System.out.println("---------Transaction Details---------");
+						System.out.println("Transfer ID: " + t.getId() + "  Transfer Status: APPROVED  Transfer Type: SEND  "
+								+ "\nFrom User: " + getNameFromUserList(t.getAccountFrom()) + "  To User: " + getNameFromUserList(t.getAccountTo()) + "  Amount Transferred: " + t.getAmount());
+						return;
+					}
+			} if (!isMatch) {
+				System.out.println("Sorry, the system did not find the ID you entered.");
+			}
+		}
+		
 	}
 
 	private void viewPendingRequests() {
@@ -227,7 +262,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				// the only other option on the login menu is to exit
 				System.out.println("Thanks for banking with TEnmo! We hope to see you again soon!");
 				printLogo();
-				System.out.println(sayGoodbyeStatement());
+				System.out.println("\n" + sayGoodbyeStatement());
 				exitProgram();
 			}
 		}
