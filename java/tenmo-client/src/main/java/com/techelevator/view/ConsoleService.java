@@ -38,7 +38,7 @@ public class ConsoleService {
 			// eat the exception, an error message will be displayed below since choice will be null
 		}
 		if (choice == null) {
-			out.println("\n*** " + userInput + " is not a valid option ***\n");
+			out.println("\n--- Sorry, but [" + userInput + "] is not a valid option ---\n");
 		}
 		return choice;
 	}
@@ -49,7 +49,7 @@ public class ConsoleService {
 			int optionNum = i + 1;
 			out.println(optionNum + ") " + options[i]);
 		}
-		out.print("\nPlease choose an option >>> ");
+		out.print("\nWhat would you like to do today? ");
 		out.flush();
 	}
 
@@ -68,7 +68,7 @@ public class ConsoleService {
 			try {
 				result = Integer.parseInt(userInput);
 			} catch(NumberFormatException e) {
-				out.println("\n*** " + userInput + " is not valid ***\n");
+				out.println("\n--- Sorry, but [" + userInput + "] is not valid ---\n");
 			}
 		} while(result == null);
 		return result;

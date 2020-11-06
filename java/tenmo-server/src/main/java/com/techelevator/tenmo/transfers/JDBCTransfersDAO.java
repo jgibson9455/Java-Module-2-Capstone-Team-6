@@ -51,7 +51,7 @@ public class JDBCTransfersDAO {
     	return transferList;
     	
     }
-    public Transfer listTransfersByTransferId(int id){
+    public Transfers listTransfersByTransferId(int id){
     	Transfers transfer = new Transfers();
     	try {
     	String query = "SELECT * FROM transfers WHERE transfer_id = ?";

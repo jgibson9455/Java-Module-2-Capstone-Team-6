@@ -49,18 +49,29 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	public void run() {
-		System.out.println("*********************");
-		System.out.println("* Welcome to TEnmo! *");
-		System.out.println("*********************");
-		
+//		System.out.println("*********************");
+//		System.out.println("* Welcome to TEnmo! *");
+//		System.out.println("*********************");
+		printHeader();
+		printLogo();
+		System.out.println();
 		registerAndLogin();
 		mainMenu();
 	}
 
 	private void mainMenu() {
 		populateUserList();
+		printLogo();
+		System.out.println("-------------------------------------");
+		System.out.println("Current user: " + currentUser.getUser().getUsername());
+		System.out.println("-------------------------------------");
 		while(true) {
+
 			String choice = (String)console.getChoiceFromOptions(MAIN_MENU_OPTIONS);
+			printLogo();
+			System.out.println("-------------------------------------");
+			System.out.println("Current user: " + currentUser.getUser().getUsername());
+			System.out.println("-------------------------------------");
 			if(MAIN_MENU_OPTION_VIEW_BALANCE.equals(choice)) {
 				viewCurrentBalance(currentUser);
 			} else if(MAIN_MENU_OPTION_VIEW_PAST_TRANSFERS.equals(choice)) {
@@ -69,15 +80,21 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				viewPendingRequests();
 			} else if(MAIN_MENU_OPTION_SEND_BUCKS.equals(choice)) {
 				input = new Scanner(System.in);
-				System.out.println("*********************Current Users**************************");
+				System.out.println("---------Current Users---------");
 				for (Users u : userList) {
-					System.out.println(u.getUserId() + ") " + u.getUsername());
+					System.out.println("(" + u.getUserId() + ")   " + u.getUsername());
 				}
+				viewCurrentBalance(currentUser);
+				System.out.println();
 				try {
 				System.out.print("\nPlease enter the user ID you would like to send bucks to: ");
 				int aNumber = Integer.valueOf(input.nextLine());
 				System.out.print("\nPlease enter the amount you would like to send: ");
 				double amountToSend = Double.parseDouble(input.nextLine());
+				if (amountToSend <= 0) {
+					System.out.println("How are you supposed to send that amount? Please, try again.");
+					return;
+				}
 				sendBucks(currentUser, aNumber, amountToSend);
 				}catch(NumberFormatException ex) {
 					System.out.println("\nSorry, something went wrong! Try again!");
@@ -113,14 +130,17 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				(API_BASE_URL + "transfers/users/" + currentUser.getUser().getId(), Transfers[].class);
 		List<Transfers> transferList = Arrays.asList(entity.getBody());
 		
-		System.out.println("*********************Transaction History**************************");
+		System.out.println("---------Transaction History---------");
+		System.out.println("-------------------------------------");
 		for (Transfers t : transferList) {
-			System.out.println("Bucks Sent: " + t.getAmount() + "   |  To User: " + getNameFromUserList(t.getAccountTo()));
+			System.out.println("Bucks Sent: " + t.getAmount() + "\nTo User: " + getNameFromUserList(t.getAccountTo()));	
+			System.out.println("-------------------------------------");
+
 		}
 	}
 
 	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
+		System.out.println("\nWe apologize for the inconvinience, but this feature has not yet been implemented!\n");
 		
 	}
 
@@ -134,11 +154,13 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		if (amountToSend > currentUserBalance) {
 			System.out.println("Sorry, but you can't send more money than you have!");
 			viewCurrentBalance(currentUser);
+			System.out.println();
 			return;
 		}else {
 		restTemplate.put(API_BASE_URL + "withdraw/" + id, amountToSend);
 	    restTemplate.put(API_BASE_URL + "deposit/"+ toId, amountToSend);
 		viewCurrentBalance(currentUser);
+		System.out.println();
 		}
 		
 		Transfers transfer = new Transfers();
@@ -159,7 +181,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void requestBucks() {
-		// TODO Auto-generated method stub
+		System.out.println("\nWe apologize for the inconvinience, but this feature has not yet been implemented!\n");
 		
 	}
 	
@@ -192,6 +214,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				register();
 			} else {
 				// the only other option on the login menu is to exit
+				System.out.println("Thanks for banking with TEnmo! We hope to see you again soon!");
+				printLogo();
 				exitProgram();
 			}
 		}
@@ -238,4 +262,20 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		String password = console.getUserInput("Password");
 		return new UserCredentials(username, password);
 	}
+	
+	public void printHeader() {
+		System.out.println("  _      __    __                     __    ");
+		System.out.println(" | | /| / /__ / /______  __ _  ___   / /____");
+		System.out.println(" | |/ |/ / -_) / __/ _ \\/  ' \\/ -_) / __/ _ \\");
+		System.out.println(" |__/|__/\\__/_/\\__/\\___/_/_/_/\\__/  \\__/\\___/");
+	}
+	
+	public void printLogo() {
+		System.out.println("   ____________                    ");
+		System.out.println("  /_  __/ ____/___  ____ ___  ____");
+		System.out.println("   / / / __/ / __ \\/ __ `__ \\/ __ \\ ");
+		System.out.println("  / / / /___/ / / / / / / / / /_/ /");
+		System.out.println(" /_/ /_____/_/ /_/_/ /_/ /_/\\____/");
+	}
 }
+
