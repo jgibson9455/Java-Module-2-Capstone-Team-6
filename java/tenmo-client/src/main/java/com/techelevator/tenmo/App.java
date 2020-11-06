@@ -1,7 +1,9 @@
 package com.techelevator.tenmo;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
 import org.springframework.http.ResponseEntity;
@@ -105,6 +107,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				login();
 			} else {
 				// the only other option on the main menu is to exit
+				System.out.println("Thanks for banking with TEnmo! We hope to see you again soon!");
 				exitProgram();
 			}
 		}
@@ -131,11 +134,19 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		List<Transfers> transferList = Arrays.asList(entity.getBody());
 		
 		System.out.println("---------Transaction History---------");
-		System.out.println("-------------------------------------");
+		System.out.println("---------------Outgoing--------------");
+		
 		for (Transfers t : transferList) {
 			System.out.println("Bucks Sent: " + t.getAmount() + "\nTo User: " + getNameFromUserList(t.getAccountTo()));	
 			System.out.println("-------------------------------------");
-
+		}
+		ResponseEntity<Transfers[]> toEntity = restTemplate.getForEntity
+				(API_BASE_URL + "/transfers/userTo/" + currentUser.getUser().getId(), Transfers[].class);
+		List<Transfers> incomingTransfers = Arrays.asList(toEntity.getBody());
+		System.out.println("---------------Incoming--------------");
+		for (Transfers t : incomingTransfers) {
+			System.out.println("Bucks Received: " + t.getAmount() + "\nFrom User: " + getNameFromUserList(t.getAccountFrom()));	
+			System.out.println("-------------------------------------");
 		}
 	}
 
@@ -216,6 +227,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				// the only other option on the login menu is to exit
 				System.out.println("Thanks for banking with TEnmo! We hope to see you again soon!");
 				printLogo();
+				System.out.println(sayGoodbyeStatement());
 				exitProgram();
 			}
 		}
@@ -277,5 +289,24 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		System.out.println("  / / / /___/ / / / / / / / / /_/ /");
 		System.out.println(" /_/ /_____/_/ /_/_/ /_/ /_/\\____/");
 	}
+	
+	 public String sayGoodbyeStatement() { 
+	        Random rand = new Random(); 
+	        List<String> list = new ArrayList<>();
+	        list.add("Have a nice day!");
+	        list.add("Goodbye!");
+	        list.add("See ya later!");
+	        list.add("Sayonara!");
+	        list.add("Matane!");
+	        list.add("Have a good one!");
+	        list.add("Adios!");
+	        list.add("Hasta manana!");
+	        list.add("Until next time!");
+	        list.add("Good night!");
+	        list.add("Bye!");
+	        list.add("Au revoir!");
+	        list.add("See ya!");
+	        return list.get(rand.nextInt(list.size())); 
+	    }
 }
 

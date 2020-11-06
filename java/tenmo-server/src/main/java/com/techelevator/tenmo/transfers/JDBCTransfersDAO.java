@@ -51,6 +51,23 @@ public class JDBCTransfersDAO {
     	return transferList;
     	
     }
+    
+    public List<Transfers> listTransfersByToId(int id){
+    	List<Transfers> transferList = new ArrayList<>();
+    	try {
+    	String query = "SELECT * FROM transfers WHERE account_to = ?";
+    	SqlRowSet rowSet = jdbcTemplate.queryForRowSet(query, id);
+    	while (rowSet.next()) {
+    		Transfers transfer = mapRowToTransfer(rowSet);
+    		transferList.add(transfer);
+    	}
+    	}catch (NullPointerException ex) {
+    		System.out.println("No transfers found!");
+    		return transferList;
+    	}
+    	return transferList;
+    	
+    }
     public Transfers listTransfersByTransferId(int id){
     	Transfers transfer = new Transfers();
     	try {

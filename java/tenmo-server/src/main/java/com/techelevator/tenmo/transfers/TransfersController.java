@@ -38,6 +38,11 @@ public class TransfersController {
 		return jdbcTransfersDao.listTransfersByFromId(id);
 	}
 	
+	@RequestMapping(path="/transfers/userTo/{id}", method=RequestMethod.GET)
+	public List<Transfers> listTransfersByToId(@PathVariable int id){
+		return jdbcTransfersDao.listTransfersByToId(id);
+	}
+	
 	@RequestMapping(path = "/transfers/{id}", method = RequestMethod.GET)
 	public Transfers getTransfersById(@PathVariable int id) {
 		return jdbcTransfersDao.listTransfersByTransferId(id);
